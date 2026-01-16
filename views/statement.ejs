@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face {
+            font-family: 'Roboto';
+            src: url('/fonts/Roboto-Light.ttf') format('truetype');
+            font-weight: 300;
+        }
+
+        @font-face {
+            font-family: 'Roboto';
+            src: url('/fonts/Roboto-Regular.ttf') format('truetype');
+            font-weight: 400;
+        }
+
+        @font-face {
+            font-family: 'Roboto';
+            src: url('/fonts/Roboto-Medium.ttf') format('truetype');
+            font-weight: 500;
+        }
+
+        @font-face {
+            font-family: 'Roboto';
+            src: url('/fonts/Roboto-Bold.ttf') format('truetype');
+            font-weight: 700;
+        }
+
+        * {
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @media screen {
+            body {
+                padding: 20px;
+                margin: 0;
+                font-family: 'Roboto', sans-serif;
+            }
+
+            .page-container {
+                margin: 10px auto;
+                width: fit-content;
+            }
+
+            .page {
+                overflow: hidden;
+                position: relative;
+                background-color: white;
+                padding: 70px 50px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+                box-sizing: border-box;
+                height: 297mm;
+                width: 210mm;
+                max-width: 210mm;
+                max-height: 297mm;
+                font-family: 'Roboto', sans-serif;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+                padding: 0;
+            }
+
+            .page-container {
+                width: 100%;
+                margin: 0;
+            }
+
+            .page {
+                width: 210mm;
+                height: 297mm;
+                max-width: 210mm;
+                max-height: 297mm;
+                margin: 0;
+                padding: 40px 50px;
+                box-shadow: none;
+                box-sizing: border-box;
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        .page {
+            font-size: 11px;
+            color: #000;
+            line-height: 1.2;
+            letter-spacing: 0;
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-header {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .left-block {
+            padding-right: 20px;
+            margin-right: 20px;
+            border-right: 2px solid #cfcfcf;
+        }
+
+        .right-block {
+            padding-left: 10px;
+            margin-bottom: 19px;
+        }
+
+        .page:last-child {
+            page-break-after: auto;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            margin-top: 20px;
+        }
+
+        .header-section-simple {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 10px;
+        }
+
+        .logo-section-simple {
+            padding-right: 10px;
+            margin-right: 15px;
+            border-right: 2px solid #cfcfcf;
+            height: 45px
+        }
+
+
+        .logo-section {
+            flex: 1;
+        }
+
+        .kotak-logo {
+            width: 140px;
+            height: 45px;
+            margin-left: -5px;
+        }
+
+        .kotak-logo-inside {
+            width: 120px;
+            height: auto;
+            margin-bottom: 8px;
+            margin-left: -3px;
+        }
+
+        .statement-title {
+            font-size: 35px;
+            color: #000;
+            letter-spacing: 0.5px;
+
+            .spacing {
+                padding-right: 25px;
+                margin-right: 25px;
+                border-right: 2px solid #cfcfcf;
+                top: -6px;
+                position: relative;
+            }
+        }
+        
+
+        .statement-period {
+            font-size: 11px;
+            color: #666565;
+            font-weight: bold;
+            margin-top: -2px;
+        }
+
+        .account-details-right {
+            text-align: right;
+            flex: 1;
+            padding-left: 20px;
+        }
+
+        .account-details-right-simple {
+            flex: 1;
+            margin-top: 7px;
+        }
+
+        .account-number {
+            font-size: 13px;
+            color: gray;
+            align-items: center;
+            display: flex;
+        }
+
+        .branch-info {
+            font-size: 13px;
+            color: gray;
+            display: flex;
+            align-items: center;
+        }
+
+        .account-holder-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .account-holder-left {
+            flex: 1;
+        }
+
+        .account-holder-name {
+            font-size: 15px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 1px;
+        }
+
+        .account-holder-name-title {
+            font-size: 15px;
+            font-weight: 400;
+            color: #000;
+        }
+
+        .crn-info {
+            font-size: 10px;
+            color: #5e5959de;
+            margin-bottom: 6px;
+        }
+
+        .address-info {
+            font-size: 11px;
+            color: #000;
+            line-height: 1.2;
+            margin-top: 5px;
+            width: 140px;
+        }
+
+        .account-holder-right {
+            flex: 1;
+            padding-left: 30px;
+            margin-top: 38px;
+        }
+
+        .nominee-info {
+            font-size: 11px;
+            margin-bottom: 2px;
+            color: gray;
+        }
+
+        .nominee-name {
+            font-weight: bold;
+            color: #000;
+        }
+
+        .ifsc-info {
+            font-size: 11px;
+            margin-bottom: 2px;
+            color: gray;
+        }
+
+        .ifsc-code {
+            color: #000;
+            font-weight: bold;
+        }
+
+        .micr-info {
+            font-size: 11px;
+            color: gray;
+        }
+
+        .micr-code {
+            font-weight: bold;
+            color: #000;
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 10px;
+        }
+
+        .transaction-table thead {
+            background-color: #e5e5e5;
+        }
+
+        .transaction-table th {
+            padding: 15px 6px;
+            text-align: left;
+            font-size: 10px;
+            color: #8b8585c7;
+            
+        }
+
+        .transaction-table td {
+            padding: 6px 6px;
+            vertical-align: top;
+        }
+
+        .transaction-table tr {
+            border-bottom: 1px solid rgba(85, 83, 83, 0.25);
+        }
+
+        .transaction-table td.col-balance {
+            font-weight: 700;
+        }
+
+        .col-number {
+            font-weight: 100;
+            color: #6e6d6d;
+        }
+
+        .col-txn-date {
+            vertical-align: middle;
+            padding: 8px 6px;
+            white-space: nowrap;
+            color: #6e6d6d;
+            font-weight: 100;
+        }
+
+        .txn-date {
+            font-weight: 100;
+            color: #6e6d6d;
+            line-height: 1.2;
+        }
+
+        .txn-time {
+            color: #868282;
+        }
+
+        .col-value-date {
+            width: 14%;
+            font-weight: 100;
+            color: #6e6d6d;
+        }
+
+        .col-details {
+            word-wrap: break-word;
+            font-weight: 100;
+            color: #6e6d6d;
+        }
+
+        .col-ref {
+            white-space: nowrap;
+            font-weight: 100;
+            color: #6e6d6d;
+        }
+
+        .col-amount {
+            text-align: right;
+            font-weight: 100;
+            color: #6e6d6d;
+        }
+
+        .col-balance {
+            text-align: right;
+        }
+
+        .amount-debit {
+            font-weight: 100;
+            color: #6e6d6d;
+        }
+
+        .amount-credit {
+            font-weight: 100;
+            color: #6e6d6d;
+        }
+        .footer-section {
+            margin-top: auto;
+            font-size: 10px;
+            color: #565454de;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .statement-period-simple {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border-right: none;
+
+            .name {
+                font-size: 14px;
+                display: flex;
+                font-weight: bolder;
+            }
+
+            .period {
+                font-size: 12px;
+                display: flex;
+                font-weight: bold;
+                color: #6a6363;
+                margin-top: 2px;
+            }
+        }
+
+        .footer-left {
+            flex: 1;
+        }
+
+        .footer-right {
+            text-align: left;
+            width: 108px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <% function formatTransactionDate(dateObj) { if (!dateObj) return '' ; const date=new Date(dateObj); if
+        (isNaN(date.getTime())) return '' ; const day=date.getDate(); const monthNames=['Jan', 'Feb' , 'Mar' , 'Apr'
+        , 'May' , 'Jun' , 'Jul' , 'Aug' , 'Sep' , 'Oct' , 'Nov' , 'Dec' ]; const month=monthNames[date.getMonth()];
+        const year=date.getFullYear(); // Generate random time between 6 AM and 11 PM const
+        hours=Math.floor(Math.random() * 18) + 6; const minutes=Math.floor(Math.random() * 60); const period=hours>= 12
+        ? 'PM' : 'AM';
+        const displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
+        const timeStr = String(displayHours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ' ' + period;
+
+        return {date:day + ' ' + month + ' ' + year, time: timeStr};
+        }
+
+        // Helper function to format date for value date
+        function formatValueDate(dateObj) {
+        if (!dateObj) return '';
+        const date = new Date(dateObj);
+        if (isNaN(date.getTime())) return '';
+
+        const day = date.getDate();
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const month = monthNames[date.getMonth()];
+        const year = date.getFullYear();
+
+        return day + ' ' + month + ' ' + year ;
+        }
+
+        // Helper function to format statement period
+        function formatStatementPeriod(from, to) {
+        const fromDate = new Date(from);
+        const toDate = new Date(to);
+
+        const fromDay = fromDate.getDate();
+        const toDay = toDate.getDate();
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const fromMonth = monthNames[fromDate.getMonth()];
+        const toMonth = monthNames[toDate.getMonth()];
+        const fromYear = fromDate.getFullYear();
+        const toYear = toDate.getFullYear();
+
+        return fromDay + ' ' + fromMonth + ' ' + fromYear + ' - ' + toDay + ' ' + toMonth + ' ' + toYear;
+        }
+
+        // Helper function to format debit/credit amount
+        function formatDebitCredit(amount, isCredit) {
+        if (!amount) return '';
+        const num = parseFloat(amount.toString().replace(/,/g, ''));
+        const formatted = num.toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+        });
+        return isCredit ? '+' + formatted : '-' + formatted;
+        }
+
+        // Helper function to format footer date
+        function formatFooterDate() {
+        const now = new Date();
+        const day = now.getDate();
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const month = monthNames[now.getMonth()];
+        const year = now.getFullYear();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
+        return day + ' ' + month + ' ' + year + ', ' + String(displayHours).padStart(2, '0') + ':' +
+        String(minutes).padStart(2, '0') + ' ' + period;
+        }
+
+        // Pagination: 15 transactions on first page, 17 transactions on subsequent pages
+        const firstPageLimit = 15;
+        const subsequentPageLimit = 22;
+        const totalTransactions = tx.length;
+
+        // Calculate total pages
+        let totalPages;
+if (totalTransactions <= firstPageLimit) {
+    totalPages = 1;
+} else {
+    const remainingTransactions = totalTransactions - firstPageLimit;
+    totalPages = 1 + Math.ceil(remainingTransactions / subsequentPageLimit);
+}
+
+// Function to get transactions for a specific page
+function getTransactionsForPage(pageNum) {
+    let startIndex, endIndex;
+    
+    if (pageNum === 1) {
+        // First page: 13 transactions
+        startIndex = 0;
+        endIndex = Math.min(firstPageLimit, totalTransactions);
+    } else {
+        // Subsequent pages: 15 transactions each
+        startIndex = firstPageLimit + (pageNum - 2) * subsequentPageLimit;
+        endIndex = Math.min(startIndex + subsequentPageLimit, totalTransactions);
+    }
+    
+    return tx.slice(startIndex, endIndex);
+}
+
+// Function to get starting transaction number for a page
+function getStartTransactionNumber(pageNum) {
+    if (pageNum === 1) {
+        return 1;
+    } else {
+        return firstPageLimit + (pageNum - 2) * subsequentPageLimit + 1;
+    }
+}
+%>
+
+            <div class="page-container">
+                <% for (let pageNum=1; pageNum <=totalPages; pageNum++) { const
+                    pageTransactions=getTransactionsForPage(pageNum); const
+                    startTransactionNumber=getStartTransactionNumber(pageNum); %>
+                    <div class="page">
+                        <% if (pageNum===1) { %>
+                            <!-- Full header for page 1 -->
+                            <div class="header-section">
+                                <div class="logo-section">
+                                    <% if (logoUrl) { %>
+                                        <img src="<%= logoUrl %>" alt="Kotak" class="kotak-logo">
+                                        <% } else { %>
+                                            <div
+                                                style="font-size: 20px; font-weight: bold; color: #0066cc; margin-bottom: 5px;">
+                                                kotak</div>
+                                            <% } %>
+                                                <div class="main-header">
+                                                    <div>
+                                                        <!-- <div class="left-block"> -->
+                                                        <div class="statement-title">Account Statement <span
+                                                                class="spacing"></span></div>
+                                                        <!-- </div> -->
+                                                        <div class="statement-period">
+                                                            <%= formatStatementPeriod(from, to) %>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="right-block">
+                                                        <div class="account-number">Account # <span
+                                                                style="font-weight: bold; color: black; font-size:15px; margin-left: 5px;">
+                                                                <%= acc %>
+                                                            </span>
+                                                            <span
+                                                                style="font-weight: bold; color: rgba(97, 95, 95, 0.877); margin-left: 6px;font-size: 11px ; margin-top: 3px;" >
+                                                                <%= accountType %>
+                                                            </span>
+                                                        </div>
+                                                        <div class="branch-info">
+                                                            Branch
+                                                            <span
+                                                                style="font-weight: bold; color: black; margin-left: 6px; font-size: 15px">
+                                                                <%= branch %>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                </div>
+                            </div>
+
+                            <div class="account-holder-section">
+                                <div class="account-holder-left">
+                                    <div class="account-holder-name">
+                                        <%= name %>
+                                    </div>
+                                    <div class="crn-info">CRN <%= crn %>
+                                    </div>
+                                    <div class="address-info">
+                                        <%= address %>
+                                    </div>
+                                </div>
+                                <div class="account-holder-right">
+                                    <div class="nominee-info">Nominee registered <span class="nominee-name">
+                                            <%= nominationRegistered %>
+                                        </span></div>
+                                    <div class="ifsc-info">IFSC <span class="ifsc-code">
+                                            <%= ifsc %>
+                                        </span></div>
+                                    <div class="micr-info">MICR <span class="micr-code">
+                                            <%= micr %>
+                                        </span></div>
+                                </div>
+                            </div>
+                            <% } else { %>
+                                <!-- Simple header for page 2+ -->
+                                <div class="header-section-simple">
+                                    <div class="logo-section-simple">
+                                        <% if (logoUrl) { %>
+                                            <img src="<%= logoUrl %>" alt="Kotak" class="kotak-logo-inside">
+                                            <% } else { %>
+                                                <div style="font-size: 20px; font-weight: bold; color: #0066cc;">kotak
+                                                </div>
+                                                <% } %>
+                                    </div>
+                                    <div class="account-details-right-simple">
+                                        <div class="account-holder-name-title">
+                                            <%= name %>
+                                        </div>
+                                        <div class="left-block statement-period-simple">
+                                            <div class="name">Account Statement</div>
+                                            <div class="period">
+                                                <%= formatStatementPeriod(from, to) %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+
+                                    <table class="transaction-table">
+                                        <thead>
+                                            <tr>
+                                                <th class="col-number">#</th>
+                                                <th class="col-txn-date">TRANSACTION DATE</th>
+                                                <th class="col-value-date">VALUE DATE</th>
+                                                <th class="col-details">TRANSACTION DETAILS</th>
+                                                <th class="col-ref">CHQ / REF NO.</th>
+                                                <th class="col-amount">DEBIT/CREDIT(<span
+                                                        style="font-family: sans-serif;">&#8377;</span>)</th>
+                                                <th class="col-balance">BALANCE(<span
+                                                        style="font-family: sans-serif;">&#8377;</span>)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% pageTransactions.forEach((t, index)=> {
+                                                const transactionNumber = (startTransactionNumber + index).toString();
+                                                let firstLine = transactionNumber.slice(0, 2);
+                                                    let remaining = transactionNumber.slice(2);
+                                                     %>
+                                                    <tr>
+                                                        <td class="col-number">
+                                                            <div><%= firstLine %></div>
+                                                            <% if (remaining) { %>
+                                                                <div><%= remaining %></div>
+                                                                <% } %>
+                                                        </td>
+                                                        <td class="col-txn-date">
+                                                            <div class="txn-date">
+                                                                <%= formatTransactionDate(t.txnDate).date %>
+                                                            </div>
+                                                            <div class="txn-time">
+                                                                <%= formatTransactionDate(t.txnDate).time %>
+                                                            </div>
+                                                        </td>
+                                                        <td class="col-value-date">
+                                                            <%= formatValueDate(t.valueDate) %>
+                                                        </td>
+                                                        <td class="col-details">
+                                                            <%= t.description %>
+                                                        </td>
+                                                        <td class="col-ref">
+                                                            <%= t.refNo %>
+                                                        </td>
+                                                        <td class="col-amount">
+                                                            <% if (t.debit) { %>
+                                                                <span class="amount-debit">
+                                                                    <%= formatDebitCredit(t.debit, false) %>
+                                                                </span>
+                                                                <% } else if (t.credit) { %>
+                                                                    <span class="amount-credit">
+                                                                        <%= formatDebitCredit(t.credit, true) %>
+                                                                    </span>
+                                                                    <% } %>
+                                                        </td>
+                                                        <td class="col-balance">
+                                                            <%= t.balance %>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                        </tbody>
+                                    </table>
+
+                                    <div class="footer-section">
+                                        <div class="footer-left">
+                                            Statement generated on <%= formatFooterDate() %>
+                                        </div>
+                                        <div class="footer-right">
+                                            Page <%= pageNum %> of <%= totalPages %>
+                                        </div>
+                                    </div>
+
+                    </div>
+                    <% } %>
+            </div>
+
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+{
+  "Producer": "iText 5.3.4 2000-2012 1T3XT BVBA (AGPL-version)",
+  "PDFVersion": "1.4",
+  "Linearized": "No",
+  "PageCount": 10,
+  "tagged": "no",
+  "form": "none",
+  "javascript": "no",
+  "encrypted": "no",
+  "page_size": "595 x 842 pts (A4)",
+  "page_rot": "0",
+  "optimized": "no",
+  "fonts": {
+    "Roboto-Light": {
+      "type": "TrueType",
+      "encoding": "WinAnsi",
+      "embedded": false,
+      "subset": false,
+      "unicode": false
+    },
+    "Roboto-Regular": {
+      "type": "TrueType",
+      "encoding": "WinAnsi",
+      "embedded": false,
+      "subset": false,
+      "unicode": false
+    },
+    "Roboto-Medium": {
+      "type": "TrueType",
+      "encoding": "WinAnsi",
+      "embedded": false,
+      "subset": false,
+      "unicode": false
+    },
+    "GFBBPQ+Roboto-Medium": {
+      "type": "CID_TrueType",
+      "encoding": "Identity-H",
+      "embedded": true,
+      "subset": true,
+      "unicode": true,
+      "note": "This is a subset font with random prefix"
+    },
+    "Roboto-Bold": {
+      "type": "TrueType",
+      "encoding": "WinAnsi",
+      "embedded": false,
+      "subset": false,
+      "unicode": false
+    }
+  },
+  "images": {
+    "per_page": 1,
+    "type": "image + smask (alpha channel)",
+    "dimensions": "200x59",
+    "color_space": "RGB + Gray (for transparency)",
+    "bits_per_component": 8,
+    "ppi": "144 (page 1), 212 (pages 2-10)",
+    "size": "4849B (image) + 2075B (smask)",
+    "compression_ratio": "14% and 18%"
+  }
+}

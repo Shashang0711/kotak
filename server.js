@@ -552,27 +552,45 @@ function formatDateForFilename(date) {
   return dayjs(date).format("DD-MM-YYYY");
 }
 
-// Function to modify PDF metadata
-async function modifyKotakMetadata(inputPath, outputPath) {
+// Load target metadata
+let targetMetadata = null;
+try {
+  const targetMetadataPath = path.join(__dirname, 'targetMetadata.json');
+  targetMetadata = JSON.parse(require('fs').readFileSync(targetMetadataPath, 'utf8'));
+  console.log('✓ Target metadata loaded successfully');
+} catch (error) {
+  console.log('⚠ Target metadata not found, using defaults');
+}
+
+// Function to modify PDF metadata to match target
+async function modifyKotakMetadata(inputPath, outputPath, customDate = null) {
   try {
     const pdfWriter = muhammara.createWriterToModify(inputPath, {
       modifiedFilePath: outputPath,
-      compress: false,
+      compress: false, // Match target: optimized = no
+      version: targetMetadata?.PDFVersion ? parseFloat(targetMetadata.PDFVersion) : 1.4
     });
 
     const infoDictionary = pdfWriter.getDocumentContext().getInfoDictionary();
-    infoDictionary.producer = "iText 2.0.4 (by lowagie.com)";
+
+    // Set Producer to match target exactly
+    const producerString = targetMetadata?.Producer || "iText 5.3.4 2000-2012 1T3XT BVBA (AGPL-version)";
+    infoDictionary.producer = producerString;
+
+    // Clear all other metadata fields (matches target)
     infoDictionary.creator = "";
     infoDictionary.title = "";
     infoDictionary.author = "";
     infoDictionary.subject = "";
+    infoDictionary.keywords = "";
 
-    const now = new Date();
-    infoDictionary.setCreationDate(now);
-    infoDictionary.setModDate(now);
+    // Set dates (use custom if provided, otherwise current time)
+    const dateToUse = customDate ? new Date(customDate) : new Date();
+    infoDictionary.setCreationDate(dateToUse);
+    infoDictionary.setModDate(dateToUse);
 
     pdfWriter.end();
-    console.log("PDF metadata modified");
+    console.log(`✓ PDF metadata modified (Producer: ${producerString})`);
   } catch (error) {
     console.error("Error modifying PDF metadata:", error);
     const syncFs = require("fs");

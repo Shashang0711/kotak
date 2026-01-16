@@ -951,7 +951,22 @@ app.post("/generate", async (req, res) => {
         process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
     });
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
+
+    // Replace font URLs with absolute file:// paths so Puppeteer can load them
+    const fontsDir = path.join(__dirname, 'public', 'fonts');
+    const htmlWithAbsoluteFonts = html
+      .replace(/url\('\/fonts\/Roboto-Light\.ttf'\)/g, `url('file://${fontsDir}/Roboto-Light.ttf')`)
+      .replace(/url\('\/fonts\/Roboto-Regular\.ttf'\)/g, `url('file://${fontsDir}/Roboto-Regular.ttf')`)
+      .replace(/url\('\/fonts\/Roboto-Medium\.ttf'\)/g, `url('file://${fontsDir}/Roboto-Medium.ttf')`)
+      .replace(/url\('\/fonts\/Roboto-Bold\.ttf'\)/g, `url('file://${fontsDir}/Roboto-Bold.ttf')`);
+
+    await page.setContent(htmlWithAbsoluteFonts, { waitUntil: "networkidle0" });
+
+    // Wait for fonts to load before generating PDF
+    await page.evaluateHandle('document.fonts.ready');
+
+    // Give extra time for fonts to render
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     const pdfBuffer = await page.pdf({
       format: "A4",

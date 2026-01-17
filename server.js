@@ -969,16 +969,96 @@ app.post("/generate", async (req, res) => {
     });
     const page = await browser.newPage();
 
-    // Replace font URLs with absolute file:// paths so Puppeteer can load them
+    // Enable console logging from the page
+    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+    page.on('pageerror', error => console.log('PAGE ERROR:', error.message));
+
+    // Check font files exist before proceeding
     const fontsDir = path.join(__dirname, "public", "fonts");
+    const fontFiles = ['Roboto-Regular.ttf', 'Roboto-Bold.ttf', 'Roboto-Medium.ttf', 'Roboto-Light.ttf'];
+    console.log('\n🔍 FONT DEBUG - Checking font files...');
+    console.log('Font base path:', FONT_BASE_PATH);
+    console.log('Fonts directory:', fontsDir);
+
+    for (const fontFile of fontFiles) {
+      const fontPath = path.join(fontsDir, fontFile);
+      const exists = require('fs').existsSync(fontPath);
+      const size = exists ? require('fs').statSync(fontPath).size : 0;
+      console.log(`  ${exists ? '✅' : '❌'} ${fontFile}: ${size} bytes ${!exists ? '(MISSING!)' : size === 0 ? '(EMPTY!)' : ''}`);
+    }
 
     await page.setContent(html, { waitUntil: "networkidle0" });
 
+    // Debug: Check what fonts are actually loaded in the page
+    console.log('\n🔍 FONT DEBUG - Checking fonts in rendered page...');
+    const fontDebugInfo = await page.evaluate(() => {
+      const debug = {
+        documentFonts: [],
+        computedBodyFont: '',
+        fontFaceRules: []
+      };
+
+      // Get all loaded fonts
+      if (document.fonts) {
+        document.fonts.forEach(font => {
+          debug.documentFonts.push({
+            family: font.family,
+            weight: font.weight,
+            status: font.status,
+            loaded: font.status === 'loaded'
+          });
+        });
+      }
+
+      // Get computed font on body
+      const body = document.querySelector('body');
+      if (body) {
+        debug.computedBodyFont = window.getComputedStyle(body).fontFamily;
+      }
+
+      // Get @font-face rules from stylesheets
+      for (const sheet of document.styleSheets) {
+        try {
+          for (const rule of sheet.cssRules || sheet.rules) {
+            if (rule instanceof CSSFontFaceRule) {
+              debug.fontFaceRules.push({
+                family: rule.style.fontFamily,
+                src: rule.style.src,
+                weight: rule.style.fontWeight
+              });
+            }
+          }
+        } catch (e) {
+          // Cross-origin stylesheet, skip
+        }
+      }
+
+      return debug;
+    });
+
+    console.log('Fonts detected in page:', fontDebugInfo.documentFonts.length);
+    fontDebugInfo.documentFonts.forEach(f => {
+      console.log(`  ${f.loaded ? '✅' : '❌'} ${f.family} (${f.weight}): ${f.status}`);
+    });
+    console.log('Body font-family:', fontDebugInfo.computedBodyFont);
+    console.log('@font-face rules found:', fontDebugInfo.fontFaceRules.length);
+    fontDebugInfo.fontFaceRules.forEach(f => {
+      console.log(`  - ${f.family} (${f.weight}): ${f.src.substring(0, 80)}...`);
+    });
+
     // Wait for fonts to load before generating PDF
+    console.log('\n🔍 FONT DEBUG - Waiting for fonts to load...');
     await page.evaluateHandle("document.fonts.ready");
 
+    // Check font status after waiting
+    const fontsLoaded = await page.evaluate(() => {
+      return document.fonts ? document.fonts.status : 'unknown';
+    });
+    console.log('Fonts status after waiting:', fontsLoaded);
+
     // Give extra time for fonts to render
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log('✅ Font loading complete, generating PDF...\n');
 
     const pdfBuffer = await page.pdf({
       format: "A4",

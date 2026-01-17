@@ -6,6 +6,30 @@
 <head>
     <meta charset="UTF-8">
     <style>
+    /* Fonts embedded as base64 to bypass Chromium file:// security restrictions */
+    <% if (typeof fonts !== 'undefined' && fonts.regular) { %>
+    @font-face {
+        font-family: 'Roboto';
+        src: url('<%= fonts.regular %>') format('truetype');
+        font-weight: 400;
+    }
+    @font-face {
+        font-family: 'Roboto';
+        src: url('<%= fonts.bold %>') format('truetype');
+        font-weight: 700;
+    }
+    @font-face {
+        font-family: 'Roboto';
+        src: url('<%= fonts.medium %>') format('truetype');
+        font-weight: 500;
+    }
+    @font-face {
+        font-family: 'Roboto';
+        src: url('<%= fonts.light %>') format('truetype');
+        font-weight: 300;
+    }
+    <% } else { %>
+    /* Fallback to file:// paths for preview mode */
     @font-face {
         font-family: 'Roboto';
         src: url('<%= fontBasePath %>/Roboto-Regular.ttf') format('truetype');
@@ -26,6 +50,7 @@
         src: url('<%= fontBasePath %>/Roboto-Light.ttf') format('truetype');
         font-weight: 300;
     }
+    <% } %>
 
     body {
         font-family: 'Roboto', Arial, sans-serif;

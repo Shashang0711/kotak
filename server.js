@@ -11,6 +11,39 @@ const muhammara = require("muhammara");
 
 const FONT_BASE_PATH = `file://${path.join(__dirname, "public", "fonts")}`;
 
+// Function to load fonts as base64 data URIs (to bypass Chromium security restrictions)
+function loadFontsAsBase64() {
+  const fontsDir = path.join(__dirname, "public", "fonts");
+  const fonts = {
+    regular: '',
+    bold: '',
+    medium: '',
+    light: ''
+  };
+
+  try {
+    const fontFiles = {
+      regular: 'Roboto-Regular.ttf',
+      bold: 'Roboto-Bold.ttf',
+      medium: 'Roboto-Medium.ttf',
+      light: 'Roboto-Light.ttf'
+    };
+
+    for (const [key, filename] of Object.entries(fontFiles)) {
+      const fontPath = path.join(fontsDir, filename);
+      if (require('fs').existsSync(fontPath)) {
+        const fontBuffer = require('fs').readFileSync(fontPath);
+        const base64Font = fontBuffer.toString('base64');
+        fonts[key] = `data:font/truetype;charset=utf-8;base64,${base64Font}`;
+      }
+    }
+  } catch (error) {
+    console.error('⚠ Error loading fonts as base64:', error.message);
+  }
+
+  return fonts;
+}
+
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -936,6 +969,7 @@ app.post("/generate", async (req, res) => {
                 : formatAmount(opening || 0),
           logoUrl: logoBase64,
           fontBasePath: FONT_BASE_PATH,
+          fonts: loadFontsAsBase64(), // Load fonts as base64 to bypass Chromium security
         },
         (_, h) => resolve(h),
       );

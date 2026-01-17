@@ -1095,10 +1095,11 @@ app.post("/generate", async (req, res) => {
     console.log('✅ Font loading complete, generating PDF...\n');
 
     const pdfBuffer = await page.pdf({
-      format: "A4",
+      width: "595pt",
+      height: "842pt",
       margin: { top: "0", bottom: "0", left: "0", right: "0" },
       printBackground: true,
-      preferCSSPageSize: false,
+      preferCSSPageSize: true,
       displayHeaderFooter: false,
       tagged: false,
       omitBackground: false,

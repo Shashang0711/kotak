@@ -9,11 +9,13 @@ const pdfParse = require("pdf-parse");
 const transactionGenerator = require("./transactionGenerator");
 const muhammara = require("muhammara");
 
+const FONT_BASE_PATH = `file://${path.join(__dirname, "public", "fonts")}`;
+
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.set("view engine", "ejs");
-app.use(express.static("public"));
+app.use("/public", express.static(path.join(__dirname, "public")));
 
 // Configure multer for file uploads
 const upload = multer({
@@ -39,7 +41,8 @@ async function extractCustomerInfo(pdfPath) {
       accountNumber: "",
       branch: "",
       ifsc: "",
-      address: "B-90,Purshottam Nagar Society,Near Althan Garden,New City Light Road Surat City Surat - 395007",
+      address:
+        "B-90,Purshottam Nagar Society,Near Althan Garden,New City Light Road Surat City Surat - 395007",
       openingBalance: "",
       closingBalance: "",
       fromDate: "",
@@ -262,7 +265,7 @@ function generateTransactions(
   companyName,
   debitLimit = 8,
   creditLimit = 10,
-  closingBalance = null
+  closingBalance = null,
 ) {
   let tx = [];
   let openingBalance = Number(opening) || 0;
@@ -515,7 +518,7 @@ function generateTransactions(
 
       // Recalculate balances
       validTransactions.sort(
-        (a, b) => new Date(a.txnDate) - new Date(b.txnDate)
+        (a, b) => new Date(a.txnDate) - new Date(b.txnDate),
       );
       runningBalance = openingBalance;
       for (const t of validTransactions) {
@@ -555,11 +558,13 @@ function formatDateForFilename(date) {
 // Load target metadata
 let targetMetadata = null;
 try {
-  const targetMetadataPath = path.join(__dirname, 'targetMetadata.json');
-  targetMetadata = JSON.parse(require('fs').readFileSync(targetMetadataPath, 'utf8'));
-  console.log('✓ Target metadata loaded successfully');
+  const targetMetadataPath = path.join(__dirname, "targetMetadata.json");
+  targetMetadata = JSON.parse(
+    require("fs").readFileSync(targetMetadataPath, "utf8"),
+  );
+  console.log("✓ Target metadata loaded successfully");
 } catch (error) {
-  console.log('⚠ Target metadata not found, using defaults');
+  console.log("⚠ Target metadata not found, using defaults");
 }
 
 // Function to modify PDF metadata to match target
@@ -568,13 +573,17 @@ async function modifyKotakMetadata(inputPath, outputPath, customDate = null) {
     const pdfWriter = muhammara.createWriterToModify(inputPath, {
       modifiedFilePath: outputPath,
       compress: false, // Match target: optimized = no
-      version: targetMetadata?.PDFVersion ? parseFloat(targetMetadata.PDFVersion) : 1.4
+      version: targetMetadata?.PDFVersion
+        ? parseFloat(targetMetadata.PDFVersion)
+        : 1.4,
     });
 
     const infoDictionary = pdfWriter.getDocumentContext().getInfoDictionary();
 
     // Set Producer to match target exactly
-    const producerString = targetMetadata?.Producer || "iText 5.3.4 2000-2012 1T3XT BVBA (AGPL-version)";
+    const producerString =
+      targetMetadata?.Producer ||
+      "iText 5.3.4 2000-2012 1T3XT BVBA (AGPL-version)";
     infoDictionary.producer = producerString;
 
     // Clear all other metadata fields (matches target)
@@ -642,7 +651,7 @@ app.post("/preview-html", async (req, res) => {
       companyNameValue || null,
       debitLimitNum,
       creditLimitNum,
-      closingBalance
+      closingBalance,
     );
     const tx = result.transactions;
     const finalBalance = result.finalBalance;
@@ -654,13 +663,14 @@ app.post("/preview-html", async (req, res) => {
         __dirname,
         "public",
         "images",
-        "kotak-logo.png"
+        "kotak-logo.png",
       );
       const logoBuffer = await fs.readFile(logoPath);
       logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
     } catch (error) {
       console.log("Logo not found");
     }
+
 
     // Render directly as HTML (not in a popup)
     res.render("statement", {
@@ -672,7 +682,9 @@ app.post("/preview-html", async (req, res) => {
       address: (address && address.trim()) || "Address not available",
       crn: (crn && crn.trim()) || "XXXXXX000",
       micr: (micr && micr.trim()) || "000000000",
-      nominationRegistered: (nominationRegistered && nominationRegistered.trim()) || "Not Registered",
+      nominationRegistered:
+        (nominationRegistered && nominationRegistered.trim()) ||
+        "Not Registered",
       accountType: (accountType && accountType.trim()) || "SAVINGS",
       from: from || new Date().toISOString().split("T")[0],
       to: to || new Date().toISOString().split("T")[0],
@@ -682,9 +694,10 @@ app.post("/preview-html", async (req, res) => {
         closingBalance && closingBalance !== ""
           ? formatAmount(closingBalance)
           : tx.length > 0
-          ? tx[tx.length - 1].balance
-          : formatAmount(opening || 0),
+            ? tx[tx.length - 1].balance
+            : formatAmount(opening || 0),
       logoUrl: logoBase64,
+      fontBasePath: FONT_BASE_PATH,
     });
   } catch (error) {
     console.error("Preview HTML error:", error);
@@ -710,12 +723,10 @@ app.post("/upload-pdf", upload.single("pdfFile"), async (req, res) => {
     res.json(customerInfo);
   } catch (error) {
     console.error("Upload error:", error);
-    res
-      .status(500)
-      .json({
-        error: "Failed to extract customer information",
-        details: error.message,
-      });
+    res.status(500).json({
+      error: "Failed to extract customer information",
+      details: error.message,
+    });
   }
 });
 
@@ -774,7 +785,7 @@ app.post("/preview", async (req, res) => {
       companyNameValue || null,
       debitLimitNum,
       creditLimitNum,
-      closingBalance
+      closingBalance,
     );
     const tx = result.transactions;
     const finalBalance = result.finalBalance;
@@ -786,7 +797,7 @@ app.post("/preview", async (req, res) => {
         __dirname,
         "public",
         "images",
-        "kotak-logo.png"
+        "kotak-logo.png",
       );
       const logoBuffer = await fs.readFile(logoPath);
       logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
@@ -806,7 +817,9 @@ app.post("/preview", async (req, res) => {
           address: (address && address.trim()) || "Address not available",
           crn: (crn && crn.trim()) || "XXXXXX000",
           micr: (micr && micr.trim()) || "000000000",
-          nominationRegistered: (nominationRegistered && nominationRegistered.trim()) || "Not Registered",
+          nominationRegistered:
+            (nominationRegistered && nominationRegistered.trim()) ||
+            "Not Registered",
           accountType: (accountType && accountType.trim()) || "SAVINGS",
           from: from || new Date().toISOString().split("T")[0],
           to: to || new Date().toISOString().split("T")[0],
@@ -816,11 +829,12 @@ app.post("/preview", async (req, res) => {
             closingBalance && closingBalance !== ""
               ? formatAmount(closingBalance)
               : tx.length > 0
-              ? tx[tx.length - 1].balance
-              : formatAmount(opening || 0),
+                ? tx[tx.length - 1].balance
+                : formatAmount(opening || 0),
           logoUrl: logoBase64,
+          fontBasePath: FONT_BASE_PATH,
         },
-        (_, h) => resolve(h)
+        (_, h) => resolve(h),
       );
     });
 
@@ -875,7 +889,7 @@ app.post("/generate", async (req, res) => {
       companyNameValue || null,
       debitLimitNum,
       creditLimitNum,
-      closingBalance
+      closingBalance,
     );
     const tx = result.transactions;
     const finalBalance = result.finalBalance;
@@ -886,7 +900,7 @@ app.post("/generate", async (req, res) => {
         __dirname,
         "public",
         "images",
-        "kotak-logo.png"
+        "kotak-logo.png",
       );
       const logoBuffer = await fs.readFile(logoPath);
       logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
@@ -906,7 +920,9 @@ app.post("/generate", async (req, res) => {
           address: (address && address.trim()) || "Address not available",
           crn: (crn && crn.trim()) || "XXXXXX000",
           micr: (micr && micr.trim()) || "000000000",
-          nominationRegistered: (nominationRegistered && nominationRegistered.trim()) || "Not Registered",
+          nominationRegistered:
+            (nominationRegistered && nominationRegistered.trim()) ||
+            "Not Registered",
           accountType: (accountType && accountType.trim()) || "SAVINGS",
           from: from || new Date().toISOString().split("T")[0],
           to: to || new Date().toISOString().split("T")[0],
@@ -916,11 +932,12 @@ app.post("/generate", async (req, res) => {
             closingBalance && closingBalance !== ""
               ? formatAmount(closingBalance)
               : tx.length > 0
-              ? tx[tx.length - 1].balance
-              : formatAmount(opening || 0),
+                ? tx[tx.length - 1].balance
+                : formatAmount(opening || 0),
           logoUrl: logoBase64,
+          fontBasePath: FONT_BASE_PATH,
         },
-        (_, h) => resolve(h)
+        (_, h) => resolve(h),
       );
     });
 
@@ -953,20 +970,15 @@ app.post("/generate", async (req, res) => {
     const page = await browser.newPage();
 
     // Replace font URLs with absolute file:// paths so Puppeteer can load them
-    const fontsDir = path.join(__dirname, 'public', 'fonts');
-    const htmlWithAbsoluteFonts = html
-      .replace(/url\('\/fonts\/Roboto-Light\.ttf'\)/g, `url('file://${fontsDir}/Roboto-Light.ttf')`)
-      .replace(/url\('\/fonts\/Roboto-Regular\.ttf'\)/g, `url('file://${fontsDir}/Roboto-Regular.ttf')`)
-      .replace(/url\('\/fonts\/Roboto-Medium\.ttf'\)/g, `url('file://${fontsDir}/Roboto-Medium.ttf')`)
-      .replace(/url\('\/fonts\/Roboto-Bold\.ttf'\)/g, `url('file://${fontsDir}/Roboto-Bold.ttf')`);
+    const fontsDir = path.join(__dirname, "public", "fonts");
 
-    await page.setContent(htmlWithAbsoluteFonts, { waitUntil: "networkidle0" });
+    await page.setContent(html, { waitUntil: "networkidle0" });
 
     // Wait for fonts to load before generating PDF
-    await page.evaluateHandle('document.fonts.ready');
+    await page.evaluateHandle("document.fonts.ready");
 
     // Give extra time for fonts to render
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const pdfBuffer = await page.pdf({
       format: "A4",
@@ -985,7 +997,7 @@ app.post("/generate", async (req, res) => {
     const tempPdfPath = path.join(tempDir, `temp_${timestamp}.pdf`);
     const metadataModifiedPath = path.join(
       tempDir,
-      `temp_${timestamp}_metadata.pdf`
+      `temp_${timestamp}_metadata.pdf`,
     );
 
     await fs.writeFile(tempPdfPath, pdfBuffer);
@@ -993,7 +1005,7 @@ app.post("/generate", async (req, res) => {
     const finalPdfBuffer = await fs.readFile(metadataModifiedPath);
 
     console.log(
-      `Final PDF size: ${(finalPdfBuffer.length / 1024).toFixed(2)} KB`
+      `Final PDF size: ${(finalPdfBuffer.length / 1024).toFixed(2)} KB`,
     );
 
     await fs.unlink(tempPdfPath).catch(() => {});
@@ -1002,7 +1014,7 @@ app.post("/generate", async (req, res) => {
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${pdfFileName}"`
+      `attachment; filename="${pdfFileName}"`,
     );
     res.setHeader("Content-Length", finalPdfBuffer.length);
     res.send(finalPdfBuffer);
